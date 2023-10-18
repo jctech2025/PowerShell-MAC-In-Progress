@@ -1,0 +1,121 @@
+function Desktop {
+#Import-Module Microsoft.PowerShell.Management
+$Macversion = sw_vers -productVersion
+Write-Host ""
+Write-Host -ForegroundColor Green "[Desktop - Powershell MAC] Current OS $Macversion "
+Write-Host "1. Get Current Drive Layout"
+Write-Host "2. Run port scan to target computer"
+Write-Host "3. Get installed printers and current queues"
+#Write-Host "4. Test the path to a folder"
+Write-Host "4. Run nsLookup to a target name"
+Write-Host "5. Flush DNS Cache"
+Write-Host "6. Check for Software Updates"
+Write-Host "7. Delete Download History"
+Write-Host "8. Pull Wifi Passwords"
+Write-Host "9. Show or Hide all files"
+Write-Host "10. Run Network Speed Test"
+#Write-Host "12. Send test email"
+Write-Host "11. Make MAC Talk"
+Write-Host -ForegroundColor Cyan "Choose An Option Above:" -NoNewline
+$a = Read-Host
+
+if ($a -eq 1) {diskutil list internal; Desktop}
+if ($a -eq 2) {
+    Write-Host -ForegroundColor Cyan "Enter name of target: IE google.com: " -NoNewline
+    $b = Read-Host
+    Write-Host -ForegroundColor Cyan "Enter port: " -NoNewline
+    $c = Read-Host
+    nc -zv $b $c;
+    Desktop
+}
+if ($a -eq 3) {lpstat -p | awk '{print $2}' | xargs -n1 lpq -P; Desktop}
+#if ($a -eq 4) {
+    #Write-Host "Enter path: " -NoNewline
+    #$b = Read-Host
+    #Test-Path -Path $b
+   <#
+   .SYNOPSIS
+   Short description
+   
+   .DESCRIPTION
+   Long description
+   
+   .EXAMPLE
+   An example
+   
+   .NOTES
+   General notes
+   #>Desktop
+#}
+if ($a -eq 4){
+    Write-Host "Enter target address: " -NoNewline
+    $b = Read-Host
+    nslookup $b;
+    Desktop
+}
+if ($a -eq 5){
+    sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; Write-Host "DNS Cache Flushed";
+    Desktop
+}
+if ($a -eq 6){
+    softwareupdate -i -a;
+    Desktop
+}
+if ($a -eq 7){
+    Write-Host "Deleting download history...";  
+    sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'; 
+    Write-Host "Download History Deleted";
+    Desktop
+}
+
+if ($a -eq 8){
+    Write-Host "Enter Wifi name"
+    $b = Read-Host
+    security find-generic-password -wa "$b";
+    Desktop
+}
+if ($a -eq 9){
+    Write-Host "Choose option below: "
+        Write-Host "1. Show hidden files"
+        Write-Host "2. Hide Files"
+        $b = Read-Host
+            if ($b -eq 1){
+                defaults write com.apple.finder AppleShowAllFiles -bool TRUE
+                killall Finder;
+                Desktop
+            }
+            if ($b -eq 2){
+                defaults write com.apple.finder AppleShowAllFiles -bool FALSE
+                killall Finder;
+                Desktop
+            }
+        }
+    
+if ($a -eq 10){
+    networkQuality -s;
+    Desktop
+}
+#if ($a -eq 12){
+    #Write-Host "Type email: " -NoNewline
+    #$b = Read-Host
+    #Write-Host "Type subject: " -NoNewline
+    #$c = Read-Host
+    #Write-Host "Enter email address: " -NoNewline
+    #$d = Read-Host
+    #echo "$b" | mail -s "$c" "$d" ;
+    #Desktop
+#}
+if ($a -eq 11){
+    Write-Host "Type something to say: " -NoNewline
+    $b = Read-Host
+    say $b;
+    Desktop
+}
+elseif ($a -ne 1..11) {
+    Write-Host "That is not a valid option"; Desktop
+}
+else {
+    Exit
+}
+}
+Desktop
