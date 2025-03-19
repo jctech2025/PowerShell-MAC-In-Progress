@@ -6,7 +6,7 @@ Write-Host "1. Get Current Drive Layout"
 Write-Host "2. Run port scan to target address"
 Write-Host "3. Get installed printers and current queues"
 Write-Host "4. Find a file on the system"
-Write-Host "5. Run nsLookup to a target name"
+Write-Host "5. Check DNS to a target"
 Write-Host "6. Flush DNS Cache"
 Write-Host "7. Check for Software Updates"
 Write-Host "8. Delete Download History"
@@ -17,6 +17,7 @@ Write-Host "12. Netstat TCP Only Scan"
 Write-Host "13. System Settings"
 Write-Host "14. Clear Clipboard"
 Write-Host "15. Make MAC Talk"
+Write-Host "16. Check NTP Server"
 Write-Host -ForegroundColor Cyan "Choose An Option Above: " -NoNewline
 $a = Read-Host
 
@@ -41,10 +42,38 @@ if ($a -eq 4) {
    Desktop
 }
 if ($a -eq 5){
-    Write-Host "Enter target address: " -NoNewline
+    Write-Host " "
+    Write-Host "DNS Tool" -ForegroundColor Green
+    Write-Host "1. Query A record: "
+    Write-Host "2. Query SPF Record: "
+    Write-Host "3. Query DKIM Record: "
+    Write-Host "4. Query DMARC Domain: "
+    Write-Host "Choose Test Above: " -NoNewline -ForegroundColor Gray
     $b = Read-Host
-    nslookup $b;
-    Desktop
+    if ($b -eq 1){
+        Write-Host "Enter A Name: "
+        $c = Read-Host
+        nslookup $c;
+        Desktop
+    }
+    if ($b -eq 2){
+        Write-Host "Enter SPF Domain: "
+        $c = Read-Host
+        dig TXT $c;
+        Desktop
+    }
+    if ($b -eq 3){
+        Write-Host "Enter DKIM Domain: "
+        $c = Read-Host
+        dig google._domainkey.$c TXT;
+        Desktop
+    }
+    if ($b -eq 4){
+        Write-Host "Enter DMARC Domain: "
+        $c = Read-Host
+        dig _dmarc.$c TXT;
+        Desktop
+    }
 }
 if ($a -eq 6){
     sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; Write-Host "DNS Cache Flushed";
@@ -106,7 +135,12 @@ if ($a -eq 15){
     say $b;
     Desktop
 }
-if ($a -ne 1..15) {
+if ($a -eq 16){
+    Write-Host "Current Time Server: " -NoNewline
+    cat /etc/ntp.conf;
+    Desktop
+}
+if ($a -ne 1..16) {
     Write-Host "That is not a valid option"; Desktop
 }
 }
